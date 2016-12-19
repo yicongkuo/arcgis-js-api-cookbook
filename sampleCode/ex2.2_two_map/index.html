@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>兩幅圖框</title>
+
+	<!-- load esri resource -->
+	<link rel="stylesheet" href="http://js.arcgis.com/3.18/esri/css/esri.css">
+	<script src="http://js.arcgis.com/3.18"></script>
+
+	<!-- style -->
+	<style>
+		html, body{
+			width  : 100%;
+			height : 100%;
+			padding: 0;
+			margin : 0;
+		}
+		#mapLeft{
+			width  : 50%;
+			height : 100%;
+			float: left;
+		}
+		#mapRight{
+			width  : 50%;
+			height : 100%;
+			/*float: left;*/
+		}
+	</style>
+
+	<!-- main script -->
+	<script>
+		require([
+			"esri/map",
+			"dojo/on",
+			"dojo/domReady!"
+		], function (Map, on){
+			// create Map frame
+			var mapLeft = new Map("mapLeft", {
+				basemap: "oceans",
+				center : [121.017497, 23.792378],
+				zoom   : 7
+			});
+
+			var mapRight = new Map("mapRight", {
+				basemap: "topo",
+				center : [121.017497, 23.792378],
+				zoom   : 7
+			});
+
+			// set event
+			mapLeft.on('zoom-end', function (evt){
+				var newExtent = evt.extent;
+				if(
+					(mapRight.extent.xmax !== newExtent.xmax) ||
+					(mapRight.extent.xmin !== newExtent.xmin) ||
+					(mapRight.extent.ymax !== newExtent.ymax) ||
+					(mapRight.extent.ymin !== newExtent.ymin) 
+				){
+					mapRight.setExtent(evt.extent);
+					console.log('zoom left');
+				}
+			});
+			mapRight.on('zoom-end', function (evt){
+				var newExtent = evt.extent;
+				if(
+					(mapLeft.extent.xmax !== newExtent.xmax) ||
+					(mapLeft.extent.xmin !== newExtent.xmin) ||
+					(mapLeft.extent.ymax !== newExtent.ymax) ||
+					(mapLeft.extent.ymin !== newExtent.ymin) 
+				){
+					mapLeft.setExtent(evt.extent);
+					console.log('zoom right');
+				}
+			});
+
+			mapLeft.on('pan-end', function (evt){
+				var newExtent = evt.extent;
+				if(
+					(mapRight.extent.xmax !== newExtent.xmax) ||
+					(mapRight.extent.xmin !== newExtent.xmin) ||
+					(mapRight.extent.ymax !== newExtent.ymax) ||
+					(mapRight.extent.ymin !== newExtent.ymin) 
+				){
+					mapRight.setExtent(evt.extent);
+					console.log('pan left');
+				}
+			});
+			mapRight.on('pan-end', function (evt){
+				var newExtent = evt.extent;
+				if(
+					(mapLeft.extent.xmax !== newExtent.xmax) ||
+					(mapLeft.extent.xmin !== newExtent.xmin) ||
+					(mapLeft.extent.ymax !== newExtent.ymax) ||
+					(mapLeft.extent.ymin !== newExtent.ymin) 
+				){
+					mapLeft.setExtent(evt.extent);
+					console.log('pan right');
+				}
+			});
+		});
+	</script>
+</head>
+<body>
+	<div id="mapLeft"></div>
+	<div id="mapRight"></div>
+</body>
+</html>
