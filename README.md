@@ -1,4 +1,4 @@
-# 這個專案在做什麼?
+﻿# 這個專案在做什麼?
 
 這個專案在教你製作網頁地圖應用程式，讓你的網頁上擁有瀏覽地圖、查詢地點資訊等功能、也可以將自己手邊的照片做成有趣的網頁app。
 
@@ -15,4 +15,4 @@
 
 # 教學範例
 
-[3.X](http://yicongkuo.github.io/arcgis-js-api-cookbook/codeVeiw.html)
+請至[教學網頁](http://yicongkuo.github.io/arcgis-js-api-cookbook/index.html)中查詢
