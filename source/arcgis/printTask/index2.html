@@ -32,7 +32,11 @@
 	<script>
 		require([
 			"esri/map",
-            "esri/layers/FeatureLayer",
+            "esri/layers/ArcGISImageServiceLayer",
+            "esri/layers/ImageServiceParameters",
+            
+            "esri/tasks/GeometryService",
+            "esri/tasks/ProjectParameters",
 			
 			"esri/dijit/Print",
 			"esri/tasks/PrintTemplate",
@@ -41,7 +45,8 @@
 
 			"dojo/domReady!"
 		], function (
-			Map, FeatureLayer,
+			Map, ArcGISImageServiceLayer, ImageServiceParameters,
+            GeometryService, ProjectParameters,
             Print, PrintTemplate, 
             dom
         ){
@@ -58,15 +63,50 @@
 	         *  add image  
 	         ********************************/
 			/// 2.1 get image
-			var url = "http://services5.arcgis.com/SlLTYE7HwltFMonJ/ArcGIS/rest/services/%E5%9C%9F%E5%A3%A4%E6%B6%B2%E5%8C%96/FeatureServer/0";
+			var url = "https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Earthquakes/SanAndreasLidar/ImageServer";
 
-			var liqueFaction = new FeatureLayer(url);
-			map.addLayer(liqueFaction);
+			var image = new ArcGISImageServiceLayer(url);
+
+			/// 2.2 add image to map frame
+			image.on("load", function (evt) {
+			    image = evt.layer;
+			    
+			    project(
+			        image.extent, 
+			        image.extent.spatialReference, 
+			        map.spatialReference
+			    ).then(function (response){
+			        var newExtent = response[0];
+			        map.setExtent(newExtent);
+			        
+			        // get new coordinate image
+			        var params = new ImageServiceParameters();
+			            params.extent = newExtent;
+			            params.format = "jpgpng";
+
+			        image.exportMapImage(params);
+			        image.on("map-image-export", function (response){
+			            map.addLayer(response.target);
+			        });
+			    }); 
+
+			});
+
+			function project (geoObj, inSR, outSR){
+			    var geosvc = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+			    
+			    var params = new ProjectParameters();
+			        params.geometries = [geoObj];
+			        params.outSR = outSR;
+			        params.inSR = inSR;
+			    
+			    return geosvc.project(params);
+			}
 
 	        /********************************  
 	         *  add print widget
 	         ********************************/
-			liqueFaction.on("load", function (){
+			map.on("load", function (){
 				var params = {};
 					params.async = false;
 					params.map = map;

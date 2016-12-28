@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+	<title>add wmts layer</title>
+
+	<!-- load esri resource -->
+	<link rel="stylesheet" href="https://js.arcgis.com/3.19/esri/css/esri.css">
+	<script src="https://js.arcgis.com/3.19"></script>
+	
+	<style>
+		html, body, #map{
+			width: 100%;
+			height: 100%;
+			padding: 0;
+			margin : 0;
+		}
+	</style>
+
+	<!-- main script -->
+	<script>
+		require([
+			"esri/map", 
+			"esri/config",
+			
+			"esri/layers/WMTSLayerInfo",
+			"esri/layers/WMTSLayer",
+			
+			"dojo/domReady!"
+		], function(Map, esriConfig, WMTSLayerInfo, WMTSLayer) {
+			
+		    // set proxy page
+			esriConfig.defaults.io.alwaysUseProxy = false;
+			esriConfig.defaults.io.proxyUrl = "https://dry-depths-87156.herokuapp.com/proxy.php";
+			
+			// create map
+			var map = new Map("map", {
+				basemap: "topo",
+				center: [121.026653, 24.018365],
+				zoom: 7
+			});
+			
+			// add new wmts layer
+			var layerInfo = new WMTSLayerInfo({
+				identifier: "JM300K_1924",
+				tileMatrixSet: "GoogleMapsCompatible",
+				format: "jpeg"
+			});
+			var options = {
+				serviceMode: "RESTful",
+				layerInfo: layerInfo
+			}; 
+			var wmtsLayer = new WMTSLayer("http://gis.sinica.edu.tw/tileserver/wmts", options);
+			
+			map.addLayer(wmtsLayer); 
+		});
+	</script>
+</head>
+<body>
+	<div id="map"></div>
+</body>
+</html>
